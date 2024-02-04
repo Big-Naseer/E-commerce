@@ -6,6 +6,71 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @map("_id")
+  firstName String
+  LastName  String
+  email     String
+  password  String
+  image     String
+  createdAt DateTime
+  updatedAt DateTime
+
+  Order    Order?  @relation(fields: [orderId], references: [id])
+  orderId  String?
+  review   review? @relation(fields: [reviewId], references: [id])
+  reviewId String?
+}
+
+model product {
+  id          String    @id @map("_id")
+  productName String
+  type        String
+  dateAdded   DateTime
+  Category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  Order       Order?    @relation(fields: [orderId], references: [id])
+  orderId     String?
+  review      review?   @relation(fields: [reviewId], references: [id])
+  reviewId    String?
+}
+
+model Category {
+  id      String    @id @map("_id")
+  product product[]
+}
+
+model ProductVariant {
+  id          String   @id @map("_id")
+  productName String
+  Color       String
+  size        String
+  weight      String?
+  added       DateTime
+}
+
+model Order {
+  id          String     @id @map("_id")
+  user        User[]
+  product     product[]
+  orderitem   orderitem? @relation(fields: [orderitemId], references: [id])
+  orderitemId String?
+}
+
+model orderitem {
+  id    String  @id @map("_id")
+  order Order[]
+}
+
+model review {
+  id      String    @id @map("_id")
+  user    User[]
+  product product[]
+  text    String
+  rating  Int
+  date    DateTime
 }
